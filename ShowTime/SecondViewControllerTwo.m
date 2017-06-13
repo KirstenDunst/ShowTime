@@ -29,6 +29,9 @@
     
     double currentTi;
     double totalTi;
+    
+    UIButton *PauseButton;
+    BOOL isPause;
 }
 @property (nonatomic, strong) UIView *mPlayerView;
 
@@ -69,7 +72,12 @@
     //注册错误通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(OnVideoError:) name:AliVcMediaPlayerPlaybackErrorNotification object:player];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OnVideoSeekingDidFinish:) name:AliVcMediaPlayerSeekingDidFinishNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(OnVideoSeekingDidFinish:) name:AliVcMediaPlayerSeekingDidFinishNotification object:player];
+    [[NSNotificationCenter defaultCenter]addObserver:self
+                                            selector:@selector(ShowEnd:) name:AliVcMediaPlayerPlaybackDidFinishNotification object:player];
+    
     NSLog(@">>>>>播放地址：%@",mSourceURL);
     //传入播放地址，准备播放
     [player prepareToPlay:mSourceURL];
@@ -99,13 +107,16 @@
     AllLabel.textAlignment = 1;
     [self.view addSubview:AllLabel];
     
+    
+    isPause = NO;
     //暂停。播放按钮
-    UIButton *PauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    PauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     PauseButton.frame = CGRectMake(KMAIN_WIDTH-50, KMAIN_HEIGHT-100, 50, 50);
     [PauseButton setBackgroundColor:[UIColor clearColor]];
     [PauseButton setImage:[UIImage imageNamed:@"moviePlay"] forState:UIControlStateNormal];
     [PauseButton addTarget:self action:@selector(paus:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:PauseButton];
+    
     
     
     //重新播放按钮
@@ -188,7 +199,6 @@
 }
 //播放暂停；
 - (void)paus:(UIButton *)sender{
-    static BOOL isPause;
     if (isPause) {
         [sender setImage:[UIImage imageNamed:@"moviePlay"] forState:UIControlStateNormal];
         [player pause];
@@ -206,7 +216,8 @@
     [player create:_mPlayerView];
     //传入播放地址，准备播放
     [player prepareToPlay:mSourceURL];
-    
+    [PauseButton setImage:[UIImage imageNamed:@"moviePlay"] forState:UIControlStateNormal];
+    isPause = NO;
 }
 
 //快退
@@ -221,6 +232,8 @@
     
     [player pause];
     [player seekTo:currentTi];
+    [PauseButton setImage:[UIImage imageNamed:@"moviePlay"] forState:UIControlStateNormal];
+    isPause = NO;
 }
 
 //快进
@@ -234,17 +247,16 @@
     [self setTimeLabValues:currentTi totalTime:totalTi];
     [player pause];
     [player seekTo:currentTi];
+    [PauseButton setImage:[UIImage imageNamed:@"moviePlay"] forState:UIControlStateNormal];
+    isPause = NO;
 }
 
 //slider值改变的时候触发的事件
 - (void)ChangePress:(UISlider *)sender{
     //调节滑杆的进度，进而调节进度显示。
-    [player pause];
     currentTi = totalTi * sender.value;
     [self setTimeLabValues:currentTi totalTime:totalTi];
     [player seekTo:currentTi];
-//    [player play];
-    
 }
 
 - (void)SoundChoose:(UIButton *)sender{
@@ -332,10 +344,9 @@
 -(void) OnVideoPrepared:(NSNotification *)notification
 {
     //收到完成通知后，获取视频的相关信息，更新界面相关信息
-        [slider setMinimumValue:0];
-     begainLabel.text = [NSString stringWithFormat:@"%.2f",player.currentPosition];
-       AllLabel.text = [NSString stringWithFormat:@"%.2f",player.duration];
-    
+    [slider setMinimumValue:0];
+    begainLabel.text = [NSString stringWithFormat:@"%.2f",player.currentPosition];
+    AllLabel.text = [NSString stringWithFormat:@"%.2f",player.duration];
 }
 -(void)OnVideoError:(NSNotification *)notification
 {
@@ -345,5 +356,8 @@
 - (void)OnVideoSeekingDidFinish:(NSNotification *)notification{
     [player play];
 }
-
+//视频播放完成出发的事件
+- (void)ShowEnd:(NSNotification *)notification{
+    [self restartPlay:nil];
+}
 @end

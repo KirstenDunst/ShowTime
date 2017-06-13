@@ -35,8 +35,8 @@
 //    [oneVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
 //    [self.navigationController pushViewController:oneVC animated:YES];
     
-  
-    //由于git项目管理问题，如需要长的时间mp4视频，自行替换。
+    
+   //由于git项目管理问题，如需要长的时间mp4视频，自行替换。
      NSString *path = [[NSBundle mainBundle]pathForResource:@"login_video" ofType:@"mp4"];
     
     //测试新的
