@@ -140,7 +140,7 @@
     //开启直播预览
     [self.liveSession alivcLiveVideoStartPreview];
     //开启直播
-//    [self.liveSession alivcLiveVideoConnectServer];
+    [self.liveSession alivcLiveVideoConnectServer];
     //获取直播预览视图
     [self.liveSession previewView];
     
@@ -188,7 +188,6 @@
     //调试信息
     AlivcLDebugInfo  *i = [self.liveSession dumpDebugInfo];
     
-    
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -223,4 +222,84 @@
     UIGraphicsEndImageContext();
     return theImage;
 }
+
+#pragma mark---------------------------AlivcLiveSessionDelegate  requre
+/*!
+ * 推流错误
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session error:(NSError *)error{
+    
+}
+
+/*!
+ * 网络很慢，已经不建议直播
+ */
+- (void)alivcLiveVideoLiveSessionNetworkSlow:(AlivcLiveSession *)session{
+    
+}
+
+#pragma mark  AlivcLiveSessionDelegate option
+/*!
+ * 推流连接成功
+ */
+- (void)alivcLiveVideoLiveSessionConnectSuccess:(AlivcLiveSession *)session{
+    
+}
+
+/*!
+ * 摄像头获取成功
+ */
+- (void)alivcLiveVideoOpenVideoSuccess:(AlivcLiveSession *)session{
+    
+}
+
+/*!
+ * 麦克风获取成功
+ */
+- (void)alivcLiveVideoOpenAudioSuccess:(AlivcLiveSession *)session{
+    
+}
+
+/*!
+ * 音频设备打开失败
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session openAudioError:(NSError *)error{
+    
+}
+
+/*!
+ * 视频设备打开失败
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session openVideoError:(NSError *)error{
+    
+}
+
+/*!
+ * 音频编码失败
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session encodeAudioError:(NSError *)error{
+    
+}
+
+/*!
+ * 视频编码失败
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session encodeVideoError:(NSError *)error{
+    
+}
+
+/*!
+ * 码率变化
+ */
+- (void)alivcLiveVideoLiveSession:(AlivcLiveSession *)session bitrateStatusChange:(ALIVC_LIVE_BITRATE_STATUS)bitrateStatus{
+    
+}
+
+/*!
+ * 重连超时
+ */
+- (void)alivcLiveVideoReconnectTimeout:(AlivcLiveSession *)session error:(NSError *)error{
+    
+}
+
 @end
