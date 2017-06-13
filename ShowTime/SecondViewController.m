@@ -36,12 +36,12 @@
 //    [self.navigationController pushViewController:oneVC animated:YES];
     
     
-     NSString *path = [[NSBundle mainBundle]pathForResource:arc4random_uniform(2)? @"login_video":@"loginmovie" ofType:@"mp4"];
+//     NSString *path = [[NSBundle mainBundle]pathForResource:arc4random_uniform(2)? @"login_video":@"loginmovie" ofType:@"mp4"];
     
     //测试新的
     SecondViewControllerTwo *twoVC = [[SecondViewControllerTwo alloc]init];
-//    [twoVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
-    [twoVC SetMoiveSource:[NSURL fileURLWithPath:path]];
+    [twoVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
+//    [twoVC SetMoiveSource:[NSURL fileURLWithPath:path]];
     [self.navigationController pushViewController:twoVC animated:YES];
 }
 - (void)didReceiveMemoryWarning {

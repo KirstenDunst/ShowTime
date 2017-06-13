@@ -8,6 +8,7 @@
 
 #import "SecondViewControllerTwo.h"
 #import <AliyunPlayerSDK/AliyunPlayerSDK.h>
+#import <MediaPlayer/MPVolumeView.h>
 
 #define KMAIN_WIDTH [[UIScreen mainScreen]bounds].size.width
 #define KMAIN_HEIGHT [[UIScreen mainScreen]bounds].size.height
@@ -22,6 +23,7 @@
     UILabel *AllLabel;
     NSTimer *mTimer;
     BOOL timeRemainingDecrements;
+    UISlider *voiceSlider;
 }
 @property (nonatomic, strong) UIView *mPlayerView;
 
@@ -65,10 +67,31 @@
     //传入播放地址，准备播放
     [player prepareToPlay:mSourceURL];
     
-
 }
-
+- (void)viewDidDisappear:(BOOL)animated{
+    [mTimer invalidate];
+    mTimer = nil;
+    
+    [super viewDidDisappear:animated];
+    [player destroy];
+}
 - (void)createView{
+    //进度时间（已经观看的时间）
+    begainLabel = [[UILabel alloc]init];
+    begainLabel.frame = CGRectMake(00, KMAIN_HEIGHT-100, 100, 40);
+    begainLabel.font = [UIFont systemFontOfSize:14];
+    begainLabel.textColor = [UIColor redColor];
+    begainLabel.textAlignment = 1;
+    [self.view addSubview:begainLabel];
+    
+    //总共的时间长度（所有的时间有多少）
+    AllLabel = [[UILabel alloc]init];
+    AllLabel.frame = CGRectMake(KMAIN_WIDTH-100, KMAIN_HEIGHT-100, 100, 40);
+    AllLabel.font = [UIFont systemFontOfSize:14];
+    AllLabel.textColor = [UIColor grayColor];
+    AllLabel.textAlignment = 1;
+    [self.view addSubview:AllLabel];
+    
     //暂停。播放按钮
     UIButton *PauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     PauseButton.frame = CGRectMake(KMAIN_WIDTH-50, KMAIN_HEIGHT-100, 50, 50);
@@ -115,22 +138,6 @@
     [self.view addSubview:slider];
     [slider addTarget:self action:@selector(ChangePress:) forControlEvents:UIControlEventValueChanged];
     
-    //进度时间（已经观看的时间）
-    begainLabel = [[UILabel alloc]init];
-    begainLabel.frame = CGRectMake(50, KMAIN_HEIGHT-100, 50, 40);
-    begainLabel.font = [UIFont systemFontOfSize:14];
-    begainLabel.textColor = [UIColor redColor];
-    begainLabel.textAlignment = 1;
-    [self.view addSubview:begainLabel];
-    
-    //总共的时间长度（所有的时间有多少）
-    AllLabel = [[UILabel alloc]init];
-    AllLabel.frame = CGRectMake(KMAIN_WIDTH-100, KMAIN_HEIGHT-100, 50, 40);
-    AllLabel.font = [UIFont systemFontOfSize:14];
-    AllLabel.textColor = [UIColor grayColor];
-    AllLabel.textAlignment = 1;
-    [self.view addSubview:AllLabel];
-    
     
     //以下放在上面显示样式
     
@@ -144,21 +151,28 @@
     
     
     //声音的进度条
-    UISlider *voiceSlider = [[UISlider alloc]initWithFrame:CGRectMake(100, 100, KMAIN_WIDTH-200, 40)];
-    voiceSlider.value = 0.5;
-    voiceSlider.minimumTrackTintColor = [UIColor blueColor];
-    voiceSlider.maximumTrackTintColor = [UIColor whiteColor];
-    voiceSlider.thumbTintColor = [UIColor redColor];
-    [self.view addSubview:voiceSlider];
+    MPVolumeView *volumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(100, 100, KMAIN_WIDTH-200, 40)];
+//    volumeView.backgroundColor = [UIColor cyanColor];
+    [self.view addSubview:volumeView];
+    for (UIView* newView in volumeView.subviews) {
+        if ([newView.class.description isEqualToString:@"MPVolumeSlider"]){
+            voiceSlider = (UISlider*)newView;
+            break;
+        }
+    }
+    
+    
+    
     
     
     //亮度进度条
     UISlider *lightSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 280, 140, 40)];
-    lightSlider.value = 0.5;
+    lightSlider.value = [[UIScreen mainScreen] brightness];
     lightSlider.transform = CGAffineTransformMakeRotation(-M_PI_2);
     lightSlider.minimumTrackTintColor = [UIColor blueColor];
     lightSlider.maximumTrackTintColor = [UIColor whiteColor];
     lightSlider.thumbTintColor = [UIColor redColor];
+    [lightSlider addTarget:self action:@selector(lightChange:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:lightSlider];
     
     timeRemainingDecrements = NO;
@@ -207,11 +221,17 @@
 }
 
 - (void)SoundChoose:(UIButton *)sender{
+  
+    static CGFloat voiceValue = 0.0;
+    NSLog(@">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%f",voiceValue);
     static BOOL closeVoice;
-    if (closeVoice) {
+    if (!closeVoice) {
         [sender setImage:[UIImage imageNamed:@"mute"] forState:UIControlStateNormal];
+         voiceValue = voiceSlider.value;
+        voiceSlider.value = 0.0;
     }else{
         [sender setImage:[UIImage imageNamed:@"sound"] forState:UIControlStateNormal];
+        voiceSlider.value = voiceValue;
     }
     closeVoice = !closeVoice;
 }
@@ -237,25 +257,29 @@
     
     begainLabel.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourElapsed,minutesElapsed,secondsElapsed];
     
-    double minutesRemaining;
-    double secondsRemaining;
-    double hourRemaining;
+    int minutesRemaining;
+    int secondsRemaining;
+    int hourRemaining;
     if (timeRemainingDecrements) {
-        hourRemaining = floor((totalTime - currentTime)/3600.0);
-        minutesRemaining = floor(fmod((totalTime - currentTime)/60.0,60.0));
-        secondsRemaining = floor(fmod((totalTime - currentTime),60.0));
+        hourRemaining = (totalTim - currentTim)/360%24;
+        minutesRemaining = (totalTim - currentTim)/60%60;
+        secondsRemaining = (totalTim - currentTim)%60;
     } else {
-        minutesRemaining = floor(fmod(totalTime/60.0,60.0));
-        secondsRemaining = floor(fmod(totalTime,60.0));
-        hourRemaining = floor(totalTime/3600.0);
+        minutesRemaining = totalTim/60%60;
+        secondsRemaining = totalTim%60;
+        hourRemaining = totalTim
+        /360%24;
     }
-    AllLabel.text = timeRemainingDecrements ? [NSString stringWithFormat:@"-%02.0f:%02.0f:%02.0f", hourRemaining,minutesRemaining, secondsRemaining] : [NSString stringWithFormat:@"%02.0f:%02.0f:%02.0f", hourRemaining,minutesRemaining, secondsRemaining];
+    AllLabel.text = timeRemainingDecrements ? [NSString stringWithFormat:@"-%02.0d:%02.0d:%02.0d", hourRemaining,minutesRemaining, secondsRemaining] : [NSString stringWithFormat:@"%02.0d:%02.0d:%02.0d", hourRemaining,minutesRemaining, secondsRemaining];
     
     slider.value = currentTime/totalTime;
     
 }
 
-
+//亮度调节
+- (void)lightChange:(UISlider *)sender{
+    [[UIScreen mainScreen]setBrightness:sender.value];
+}
 
 
 
