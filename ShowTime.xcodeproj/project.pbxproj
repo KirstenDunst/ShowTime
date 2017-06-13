@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F3690CC1EEFD65C00A40C71 /* ViewControllerOne.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F3690CB1EEFD65C00A40C71 /* ViewControllerOne.m */; };
 		1F98EEDD1EEE847A0060ECEE /* movieBackward.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F98EECA1EEE847A0060ECEE /* movieBackward.png */; };
 		1F98EEDE1EEE847A0060ECEE /* movieBackward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F98EECB1EEE847A0060ECEE /* movieBackward@2x.png */; };
 		1F98EEDF1EEE847A0060ECEE /* movieBackwardSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F98EECC1EEE847A0060ECEE /* movieBackwardSelected.png */; };
@@ -71,6 +72,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F3690CA1EEFD65C00A40C71 /* ViewControllerOne.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerOne.h; sourceTree = "<group>"; };
+		1F3690CB1EEFD65C00A40C71 /* ViewControllerOne.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerOne.m; sourceTree = "<group>"; };
 		1F98EECA1EEE847A0060ECEE /* movieBackward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = movieBackward.png; sourceTree = "<group>"; };
 		1F98EECB1EEE847A0060ECEE /* movieBackward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "movieBackward@2x.png"; sourceTree = "<group>"; };
 		1F98EECC1EEE847A0060ECEE /* movieBackwardSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = movieBackwardSelected.png; sourceTree = "<group>"; };
@@ -212,6 +215,8 @@
 				1FA680FB1EEA76E7006E1FF5 /* AlivcLiveViewController.h */,
 				1FA680FC1EEA76E7006E1FF5 /* AlivcLiveViewController.m */,
 				1FA680FD1EEA76E7006E1FF5 /* AlivcLiveViewController.xib */,
+				1F3690CA1EEFD65C00A40C71 /* ViewControllerOne.h */,
+				1F3690CB1EEFD65C00A40C71 /* ViewControllerOne.m */,
 				1FA680C31EEA3BA8006E1FF5 /* SecondViewControllerOne.h */,
 				1FA680C41EEA3BA8006E1FF5 /* SecondViewControllerOne.m */,
 				1FA681001EEA7C86006E1FF5 /* SecondViewControllerTwo.h */,
@@ -380,6 +385,7 @@
 				1FA680DB1EEA3EAF006E1FF5 /* Reachability.m in Sources */,
 				1FA681021EEA7C86006E1FF5 /* SecondViewControllerTwo.m in Sources */,
 				1FA680FE1EEA76E7006E1FF5 /* AlivcLiveViewController.m in Sources */,
+				1F3690CC1EEFD65C00A40C71 /* ViewControllerOne.m in Sources */,
 				1FA680C71EEA3BA8006E1FF5 /* ViewControllerFirst.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

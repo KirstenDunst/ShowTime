@@ -8,6 +8,7 @@
 
 #import "ViewControllerFirst.h"
 #import "AlivcLiveViewController.h"
+#import "ViewControllerOne.h"
 
 @interface ViewControllerFirst ()
 
@@ -32,7 +33,9 @@
 
 - (void)buttonChoose:(UIButton *)sender{
     
-    AlivcLiveViewController *live = [[AlivcLiveViewController alloc] initWithNibName:@"AlivcLiveViewController" bundle:nil url:@"rtmp://" isScreenHorizontal:YES];
+//    AlivcLiveViewController *live = [[AlivcLiveViewController alloc] initWithNibName:@"AlivcLiveViewController" bundle:nil url:@"rtmp://" isScreenHorizontal:NO];
+    
+    ViewControllerOne *live = [[ViewControllerOne alloc]initWithUrl:@"rtmp://" isScreenHorizontal:YES];
     
     [self.navigationController pushViewController:live animated:YES];
 }
