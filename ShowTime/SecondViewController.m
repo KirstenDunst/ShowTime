@@ -35,13 +35,14 @@
 //    [oneVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
 //    [self.navigationController pushViewController:oneVC animated:YES];
     
-    
-//     NSString *path = [[NSBundle mainBundle]pathForResource:arc4random_uniform(2)? @"login_video":@"loginmovie" ofType:@"mp4"];
+  
+    //由于git项目管理问题，如需要长的时间mp4视频，自行替换。
+     NSString *path = [[NSBundle mainBundle]pathForResource:@"login_video" ofType:@"mp4"];
     
     //测试新的
     SecondViewControllerTwo *twoVC = [[SecondViewControllerTwo alloc]init];
-    [twoVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
-//    [twoVC SetMoiveSource:[NSURL fileURLWithPath:path]];
+//    [twoVC SetMoiveSource:[NSURL URLWithString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"]];
+    [twoVC SetMoiveSource:[NSURL fileURLWithPath:path]];
     [self.navigationController pushViewController:twoVC animated:YES];
 }
 - (void)didReceiveMemoryWarning {

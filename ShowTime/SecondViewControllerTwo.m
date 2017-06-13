@@ -13,6 +13,8 @@
 #define KMAIN_WIDTH [[UIScreen mainScreen]bounds].size.width
 #define KMAIN_HEIGHT [[UIScreen mainScreen]bounds].size.height
 
+#define seekInterval 1000     //向前快进或者向后快退的间隔。
+
 @interface SecondViewControllerTwo ()
 {
     NSURL*  mSourceURL;
@@ -24,6 +26,9 @@
     NSTimer *mTimer;
     BOOL timeRemainingDecrements;
     UISlider *voiceSlider;
+    
+    double currentTi;
+    double totalTi;
 }
 @property (nonatomic, strong) UIView *mPlayerView;
 
@@ -56,6 +61,8 @@
     player = [[AliVcMediaPlayer alloc] init];
     //创建播放器，传入显示窗口
     [player create:_mPlayerView];
+    //设置播放的试图是自适应还是自定义的宽、高。
+    player.scalingMode = scalingModeAspectFitWithCropping;
     //注册准备完成通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(OnVideoPrepared:) name:AliVcMediaPlayerLoadDidPreparedNotification object:player];
@@ -109,23 +116,26 @@
     [RestartButton addTarget:self action:@selector(restartPlay:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:RestartButton];
     
+    UILongPressGestureRecognizer *longPressBack = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(backChoose:)];
     //快退
     UIButton *BackButton = [UIButton buttonWithType:UIButtonTypeCustom];
     BackButton.frame = CGRectMake(0, KMAIN_HEIGHT-150, 70, 50);
     [BackButton setBackgroundColor:[UIColor grayColor]];
     [BackButton setImage:[UIImage imageNamed:@"movieBackward"] forState:UIControlStateNormal];
     [BackButton setImage:[UIImage imageNamed:@"movieBackwardSelected"] forState:UIControlStateHighlighted];
-    [BackButton addTarget:self action:@selector(backChoose:) forControlEvents:UIControlEventTouchUpInside];
+    [BackButton addGestureRecognizer:longPressBack];
     [self.view addSubview:BackButton];
     
     
+    
+    UILongPressGestureRecognizer *longPressFor = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(ForwardChoose:)];
     //快进
     UIButton *ForwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     ForwardButton.frame = CGRectMake(KMAIN_WIDTH-70, KMAIN_HEIGHT-150, 70, 50);
     [ForwardButton setBackgroundColor:[UIColor grayColor]];
     [ForwardButton setImage:[UIImage imageNamed:@"movieForward"] forState:UIControlStateNormal];
     [ForwardButton setImage:[UIImage imageNamed:@"movieForwardSelected"] forState:UIControlStateHighlighted];
-    [ForwardButton addTarget:self action:@selector(ForwardChoose:) forControlEvents:UIControlEventTouchUpInside];
+    [ForwardButton addGestureRecognizer:longPressFor];
     [self.view addSubview:ForwardButton];
     
     
@@ -162,9 +172,6 @@
     }
     
     
-    
-    
-    
     //亮度进度条
     UISlider *lightSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 280, 140, 40)];
     lightSlider.value = [[UIScreen mainScreen] brightness];
@@ -177,6 +184,7 @@
     
     timeRemainingDecrements = NO;
      mTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(UpdateP:) userInfo:nil repeats:YES];
+    
 }
 //播放暂停；
 - (void)paus:(UIButton *)sender{
@@ -199,24 +207,43 @@
     //传入播放地址，准备播放
     [player prepareToPlay:mSourceURL];
     
-    [player stop];
 }
 
 //快退
-- (void)backChoose:(UIButton *)sender{
-//   [player seekTo:<#(NSTimeInterval)#>]
+- (void)backChoose:(UIGestureRecognizer *)sender{
     
+    if (currentTi<seekInterval) {
+        currentTi = 0.0;
+    }else{
+        currentTi -= seekInterval;
+    }
+    [self setTimeLabValues:currentTi totalTime:totalTi];
+    
+    [player pause];
+    [player seekTo:currentTi];
 }
 
 //快进
-- (void)ForwardChoose:(UIButton *)sender{
+- (void)ForwardChoose:(UIGestureRecognizer *)sender{
     
+    if (currentTi+seekInterval >= totalTi) {
+        currentTi = totalTi;
+    }else {
+        currentTi += seekInterval;
+    }
+    [self setTimeLabValues:currentTi totalTime:totalTi];
+    [player pause];
+    [player seekTo:currentTi];
 }
 
 //slider值改变的时候触发的事件
 - (void)ChangePress:(UISlider *)sender{
     //调节滑杆的进度，进而调节进度显示。
-//    seekto
+    [player pause];
+    currentTi = totalTi * sender.value;
+    [self setTimeLabValues:currentTi totalTime:totalTi];
+    [player seekTo:currentTi];
+//    [player play];
     
 }
 
@@ -234,17 +261,17 @@
         voiceSlider.value = voiceValue;
     }
     closeVoice = !closeVoice;
+    
 }
 -(void)UpdateP:(NSTimer *)timer{
-    
     //[self testInfo];
     
     //when seeking, do not update the slider
     
-    double currentTime = player.currentPosition;
-    double totalTime = player.duration;
-    NSLog(@">>>>>>>>>>>>>>%f<<<<<<<<<<<<<<<<<<<<%f",currentTime,totalTime);
-    [self setTimeLabValues:currentTime totalTime:totalTime];
+    currentTi = player.currentPosition;
+    totalTi = player.duration;
+    NSLog(@">>>>>>>>>>>>>>%f<<<<<<<<<<<<<<<<<<<<%f",currentTi,totalTi);
+    [self setTimeLabValues:currentTi totalTime:totalTi];
 }
 
 - (void)setTimeLabValues:(double)currentTime totalTime:(double)totalTime {
@@ -270,7 +297,7 @@
         hourRemaining = totalTim
         /360%24;
     }
-    AllLabel.text = timeRemainingDecrements ? [NSString stringWithFormat:@"-%02.0d:%02.0d:%02.0d", hourRemaining,minutesRemaining, secondsRemaining] : [NSString stringWithFormat:@"%02.0d:%02.0d:%02.0d", hourRemaining,minutesRemaining, secondsRemaining];
+    AllLabel.text = timeRemainingDecrements ? [NSString stringWithFormat:@"-%02d:%02d:%02d", hourRemaining,minutesRemaining, secondsRemaining] : [NSString stringWithFormat:@"%02d:%02d:%02d", hourRemaining,minutesRemaining, secondsRemaining];
     
     slider.value = currentTime/totalTime;
     
@@ -316,8 +343,7 @@
     NSLog(@"播放错误的原因：%ld",(long)error_code);
 }
 - (void)OnVideoSeekingDidFinish:(NSNotification *)notification{
-    [mTimer invalidate];
-    mTimer = nil;
+    [player play];
 }
 
 @end

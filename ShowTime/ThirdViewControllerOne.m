@@ -23,6 +23,10 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
+    self.title = @"本地视频循环播";
+    
+    
+    
     NSString *path = [[NSBundle mainBundle]pathForResource:arc4random_uniform(2)? @"login_video":@"loginmovie" ofType:@"mp4"];
     
     _player = [[XSMediaPlayer alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
